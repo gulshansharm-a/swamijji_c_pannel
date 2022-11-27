@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <img src="#" alt="#" id="img">
+        <input type="button" id="select" value="click">
+        <input type="button" value="upload" id="uplos"  >
+<p id="percentage" ></p>
+<input type="button" value="read" id="read" onclick="module.readdata('slide1image','img')" >
+         <script type="module">
+          // Import the functions you need from the SDKs you need
+          import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+          import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
+
+          import { getDatabase,ref,set,child,update,remove ,get} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+          import { getStorage,ref as sref,uploadBytesResumable,getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+
+          const firebaseConfig = {
+            apiKey: "AIzaSyDBfWtiNBsGTGq1FZytjsg1EMhnDp3bsvg",
+            authDomain: "swamijidemo.firebaseapp.com",
+            projectId: "swamijidemo",
+            storageBucket: "swamijidemo.appspot.com",
+            messagingSenderId: "123220597500",
+            appId: "1:123220597500:web:1367b6d52972632a579579",
+            measurementId: "G-FKRQMWLSQQ"
+          };
+        
+          // Initialize Firebase
+          const app = initializeApp(firebaseConfig);
+          const analytics = getAnalytics(app);
+       var reader=new FileReader();
+       var files=[];
+       var input=document.createElement('input');
+       input.type='file';
+       input.onchange=e=>{
+         files=e.target.files;
+         var extension=GetExt(files[0]);
+         var name=GetName(files[0]);
+         reader.readAsDataURL(files[0]);
+
+
+       }
+       document.getElementById("select").onclick =function(){
+         input.click();
+       }
+       reader.onload=function(){
+     document.getElementById("img").src=    reader.result;
+
+       }
+       function GetExt(file){
+         var temp=file.name.split('.');
+         var ext=temp.slice(0,-1).join('.');
+         return '.'+ext[0];
+       }
+       function GetName(file){
+         var temp=file.name.split('.');
+         var ext=temp.slice(0,-1).join('.');
+         return '.'+ext[0];
+       }
+       async function upload(){
+         var imagetoupload=files[0];
+         const metadata={
+           contenttype:imagetoupload,
+
+         }
+         const storage=getStorage();
+         const srefrence=sref(storage,"Image/slides"+"slide1.png");
+         const uploadtask=uploadBytesResumable(srefrence,imagetoupload,metadata);
+         uploadtask.on('state-changed',(snapshot)=>{
+           var progress=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
+            document.getElementById("percentage").innerHTML="uploaded! "+progress+"%";
+
+         },(error)=>{
+           alert("error")
+         },()=>{
+getDownloadURL(uploadtask.snapshot.ref).then((downloadURL)=>{
+  youthinkCall2("slide1image",downloadURL);
+})
+         }
+         
+         )
+       }
+       document.getElementById("uplos").onclick=upload;
+
+
+
+       
+//youthink
+function youthinkCall21(addof,url){
+  set(ref(getDatabase(),addof),{
+    text: url,
+    
+  }).then(()=>{
+    alert("added");
+    // document.getElementById(idofpara).innerHTML= document.getElementById(idoftb).value;
+  }).catch((error)=>{
+alert("unsucces,erroe"+error);
+
+
+function call(){
+  alert("call");
+}
+
+  });
+  alert("add is: "+addof);
+ 
+ }
+
+
+   
+ function readdata(add,id,nothing){
+    get(child(ref(getDatabase()),add)).then((snapshot)=>{
+ document.getElementById(id).src= snapshot.val().text
+  
+   })
+   }
+
+  module.readdata=readdata;
+
+
+
+
+
+      </script>
+      <script>
+        var module={}
+      </script>
+    </body>
+</html>
